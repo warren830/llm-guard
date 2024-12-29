@@ -4,64 +4,73 @@ import string
 from typing import Any, Callable, cast
 
 from faker import Faker
+import random
 
-fake = Faker()
+# 创建中文假数据生成器
+fake = Faker(['zh_CN'])
 fake.seed_instance(100)
 
 
+def generate_chinese_id() -> str:
+    """生成中国身份证号"""
+    # 随机生成地区码(6位)
+    area_code = str(random.randint(110000, 659900))
+    # 随机生成年月日(8位)
+    birth_day = fake.date_of_birth().strftime("%Y%m%d")
+    # 随机生成序号(3位)
+    sequence = str(random.randint(100, 999))
+    # 计算校验码
+    temp = int(area_code + birth_day + sequence)
+    check_code = '10X98765432'[temp % 11]
+    return f"{area_code}{birth_day}{sequence}{check_code}"
+
+
+def generate_social_credit_code() -> str:
+    """生成统一社会信用代码"""
+    organization_code = ''.join(random.choices('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ', k=8))
+    category_code = ''.join(random.choices('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ', k=1))
+    area_code = ''.join(random.choices('0123456789', k=6))
+    check_code = ''.join(random.choices('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ', k=1))
+    return f"{organization_code}{category_code}{area_code}{check_code}"
+
+
 _entity_faker_map: dict[str, Callable[[], Any]] = {
-    # Global entities
+    # 保留原有的全局实体
     "CREDIT_CARD": fake.credit_card_number,
     "EMAIL_ADDRESS": fake.email,
-    "IBAN_CODE": fake.iban,
     "IP_ADDRESS": fake.ipv4_public,
     "PERSON": fake.name,
-    "PHONE_NUMBER": fake.phone_number,
     "URL": fake.url,
-    "CREDIT_CARD_RE": fake.credit_card_number,
     "UUID": fake.uuid4,
     "LOCATION": fake.city,
     "DATE_TIME": fake.date,
-    "CRYPTO": cast(
-        Callable[[], str],
-        lambda _: "bc1"
-        + "".join(fake.random_choices(string.ascii_lowercase + string.digits, length=26)),
-    ),
-    "NRP": cast(Callable[[], str], lambda _: str(fake.random_number(digits=8, fix_len=True))),
-    "MEDICAL_LICENSE": cast(Callable[[], str], lambda _: fake.bothify(text="??######").upper()),
-    # US-specific entities
-    "US_BANK_NUMBER": fake.bban,
-    "US_SSN": fake.ssn,
-    "US_DRIVER_LICENSE": cast(
-        Callable[[], str], lambda _: str(fake.random_number(digits=9, fix_len=True))
-    ),
-    "US_ITIN": cast(Callable[[], str], lambda _: fake.bothify(text="9##-7#-####")),
-    "US_PASSPORT": cast(Callable[[], str], lambda _: fake.bothify(text="#####??").upper()),
-    # UK-specific entities
-    "UK_NHS": cast(Callable[[], str], lambda _: str(fake.random_number(digits=10, fix_len=True))),
-    # Spain-specific entities
-    "ES_NIF": cast(Callable[[], str], lambda _: fake.bothify(text="########?").upper()),
-    # Italy-specific entities
-    "IT_FISCAL_CODE": cast(
-        Callable[[], str], lambda _: fake.bothify(text="??????##?##?###?").upper()
-    ),
-    "IT_DRIVER_LICENSE": cast(Callable[[], str], lambda _: fake.bothify(text="?A#######?").upper()),
-    "IT_VAT_CODE": cast(Callable[[], str], lambda _: fake.bothify(text="IT???????????")),
-    "IT_PASSPORT": cast(
-        Callable[[], str], lambda _: str(fake.random_number(digits=9, fix_len=True))
-    ),
-    "IT_IDENTITY_CARD": cast(
-        Callable[[], str], lambda _: lambda _: str(fake.random_number(digits=7, fix_len=True))
-    ),
-    # Singapore-specific entities
-    "SG_NRIC_FIN": cast(Callable[[], str], lambda _: fake.bothify(text="????####?").upper()),
-    # Australia-specific entities
-    "AU_ABN": cast(Callable[[], str], lambda _: str(fake.random_number(digits=11, fix_len=True))),
-    "AU_ACN": cast(Callable[[], str], lambda _: str(fake.random_number(digits=9, fix_len=True))),
-    "AU_TFN": cast(Callable[[], str], lambda _: str(fake.random_number(digits=9, fix_len=True))),
-    "AU_MEDICARE": cast(
-        Callable[[], str], lambda _: str(fake.random_number(digits=10, fix_len=True))
-    ),
+
+    # 添加中国特定的实体
+    "PHONE_NUMBER_CN": lambda: f"1{random.choice(['3', '4', '5', '6', '7', '8', '9'])}{fake.numerify('########')}",
+    "ID_CARD_CN": generate_chinese_id,
+    "BANK_CARD_CN": lambda: f"{random.choice(['4', '5', '6'])}{fake.numerify('#' * 15)}",
+    "SOCIAL_CREDIT_CODE_CN": generate_social_credit_code,
+    "POSTAL_CODE_CN": lambda: fake.postcode(),
+    "PASSPORT_CN": lambda: f"{random.choice(['E', 'G', 'D', 'S'])}{fake.numerify('########')}",
+    "MILITARY_ID_CN": lambda: f"军字第{fake.numerify('########')}号",
+    "QQ_NUMBER": lambda: str(random.randint(10000, 9999999999)),
+    "WECHAT_ID": lambda: f"wx_{''.join(random.choices(string.ascii_lowercase + string.digits, k=10))}",
+    "LICENSE_PLATE_CN": lambda: f"{random.choice('京津沪渝冀豫云辽黑湘皖鲁新苏浙赣鄂桂甘晋蒙陕吉闽贵粤青藏川宁琼使领')}{random.choice('ABCDEFGHJKLMNPQRSTUVWXYZ')}{''.join(random.choices('0123456789ABCDEFGHJKLMNPQRSTUVWXYZ', k=5))}",
+
+    # 中国其他常见证件号码
+    "PASSPORT_HK_CN": lambda: f"H{fake.numerify('########')}",
+    "PASSPORT_MO_CN": lambda: f"M{fake.numerify('########')}",
+    "PASSPORT_TW_CN": lambda: f"T{fake.numerify('########')}",
+    "HK_ID_CN": lambda: f"{random.choice(string.ascii_uppercase)}{fake.numerify('######')}({random.choice(string.digits)})",
+    "MO_ID_CN": lambda: f"{fake.numerify('#######')}({random.choice(string.digits)})",
+
+    # 公司相关
+    "TAX_ID_CN": lambda: f"{fake.numerify('####################')}",
+    "ORGANIZATION_CODE_CN": lambda: f"{fake.numerify('########')}-{random.choice(string.digits)}",
+
+    # 其他中国特色号码
+    "ALIPAY_ID": lambda: f"2088{fake.numerify('##########')}",
+    "WEBSITE_ICP": lambda: f"京ICP备{fake.numerify('#####')}号",
 }
 
 

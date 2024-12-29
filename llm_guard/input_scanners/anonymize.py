@@ -13,7 +13,7 @@ from ..exception import LLMGuardValidationError
 from ..util import calculate_risk_score, get_logger
 from ..vault import Vault
 from .anonymize_helpers import (
-    DEBERTA_AI4PRIVACY_v2_CONF,
+    BERT_ZH_NER_CONF,
     get_analyzer,
     get_fake_value,
     get_regex_patterns,
@@ -28,16 +28,27 @@ DEFAULT_ENTITY_TYPES: Final[list[str]] = [
     "CREDIT_CARD",
     "CRYPTO",
     "EMAIL_ADDRESS",
-    "IBAN_CODE",
     "IP_ADDRESS",
     "PERSON",
-    "PHONE_NUMBER",
-    "US_SSN",
-    "US_BANK_NUMBER",
+    # 移除美国特定的类型
+    # "US_SSN",
+    # "US_BANK_NUMBER",
+    # "US_SSN_RE",
+    # 添加中国特定的类型
+    "PHONE_NUMBER_CN",
+    "ID_CARD_CN",
+    "BANK_CARD_CN",
+    "SOCIAL_CREDIT_CODE_CN",
+    "POSTAL_CODE_CN",
+    "PASSPORT_CN",
+    "MILITARY_ID_CN",
+    "QQ_NUMBER",
+    "WECHAT_ID",
+    "LICENSE_PLATE_CN",
+    # 保留通用类型
     "CREDIT_CARD_RE",
     "UUID",
     "EMAIL_ADDRESS_RE",
-    "US_SSN_RE",
 ]
 
 ALL_SUPPORTED_LANGUAGES: Final[list[str]] = ["en", "zh"]
@@ -64,7 +75,7 @@ class Anonymize(Scanner):
         recognizer_conf: NERConfig | None = None,
         threshold: float = 0.5,
         use_onnx: bool = False,
-        language: str = "en",
+        language: str = "zh",
     ) -> None:
         """
         Initialize an instance of Anonymize class.
@@ -110,7 +121,7 @@ class Anonymize(Scanner):
         self._language = language
 
         if not recognizer_conf:
-            recognizer_conf = DEBERTA_AI4PRIVACY_v2_CONF
+            recognizer_conf = BERT_ZH_NER_CONF
 
         transformers_recognizer = get_transformers_recognizer(
             recognizer_conf=recognizer_conf,

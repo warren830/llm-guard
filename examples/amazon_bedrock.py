@@ -1,15 +1,15 @@
 import boto3
 
 from llm_guard import scan_output, scan_prompt
-from llm_guard.input_scanners import Anonymize, PromptInjection, TokenLimit, Toxicity
+from llm_guard.input_scanners import Anonymize, PromptInjection, TokenLimit, Toxicity, Language
 from llm_guard.output_scanners import Deanonymize, NoRefusal, Relevance, Sensitive
 from llm_guard.vault import Vault
 
 # Specify the AWS region, Bedrock agent ID, alias ID, and session ID
-REGION = ""
-AGENT_ID = ""
-AGENT_ALIAS_ID = ""
-SESSION_ID = ""
+REGION = "ap-northeast-1"
+AGENT_ID = "2XHVYVA9VT"
+AGENT_ALIAS_ID = "JDATWLDU6T"
+SESSION_ID = "afsd"
 
 
 def invoke_agent(sanitized_prompt, region, agent_id, agent_alias_id, session_id):
@@ -47,20 +47,23 @@ def invoke_agent(sanitized_prompt, region, agent_id, agent_alias_id, session_id)
 
 
 VAULT = Vault()
-INPUT_SCANNERS = [Anonymize(VAULT), Toxicity(), TokenLimit(), PromptInjection()]
-OUTPUT_SCANNERS = [Deanonymize(VAULT), NoRefusal(), Relevance(), Sensitive()]
+INPUT_SCANNERS = [Anonymize(VAULT)]
+OUTPUT_SCANNERS = [Deanonymize(VAULT)]
 
-PROMPT = (
+PROMPT_SUCCESS = (
     "Make an SQL insert statement to add a new user to our database. Name is John Doe. Email is test@test.com "
     "but also possible to contact him with hello@test.com email. Phone number is 555-123-4567 and "
     "the IP address is 192.168.1.100. And credit card number is 4567-8901-2345-6789. "
     "He works in Test LLC."
 )
 
+PROMPT = '我的身份证号是513902198708300019'
+
+
 sanitized_prompt, results_valid, results_score = scan_prompt(INPUT_SCANNERS, PROMPT)
-if any(results_valid.values()) is False:
-    print(f"Prompt {PROMPT} is not valid, scores: {results_score}")
-    exit(1)
+# if any(results_valid.values()) is False:
+#     print(f"Prompt {PROMPT_SUCCESS} is not valid, scores: {results_score}")
+#     exit(1)
 
 print(f"Prompt: {sanitized_prompt}")
 

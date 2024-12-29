@@ -190,6 +190,125 @@ DEFAULT_REGEX_PATTERNS: list[DefaultRegexPatterns | RegexPatternsReuse] = [
         "score": 0.75,
         "languages": ["en"],
     },
+    # 中国手机号
+    {
+        "expressions": [
+            r"(?:(?:\+|00)86)?1(?:3\d|4[5-9]|5[0-35-9]|6[567]|7[0-8]|8\d|9[0-35-9])\d{8}"
+        ],
+        "name": "PHONE_NUMBER_CN",
+        "examples": ["13812345678", "+8613812345678", "008613812345678"],
+        "context": ["电话", "手机", "联系方式", "phone", "mobile"],
+        "score": 0.75,
+        "languages": ["zh", "en"],
+    },
+
+    # 中国身份证号
+    {
+        "expressions": [
+            r"[1-9]\d{5}(?:18|19|20)\d{2}(?:0[1-9]|1[0-2])(?:0[1-9]|[12]\d|3[01])\d{3}[\dXx]"
+        ],
+        "name": "ID_CARD_CN",
+        "examples": ["110101199001011234", "11010119900101123X"],
+        "context": ["身份证", "身份证号", "身份证号码", "公民身份号码"],
+        "score": 0.95,  # 提高身份证的匹配优先级
+        "languages": ["zh"],
+    },
+
+    # 中国银行卡号
+    {
+        "expressions": [
+            r"([1-9])(\d{15}|\d{18})"
+        ],
+        "name": "BANK_CARD_CN",
+        "examples": ["6222021234567890123"],
+        "context": ["银行卡", "储蓄卡", "信用卡", "bank card"],
+        "score": 0.75,
+        "languages": ["zh", "en"],
+    },
+
+    # 统一社会信用代码
+    {
+        "expressions": [
+            r"[1-9A-GY]{1}[1239]{1}[1-5]{1}[0-9]{5}[0-9A-Z]{10}"
+        ],
+        "name": "SOCIAL_CREDIT_CODE_CN",
+        "examples": ["91110108MA01234567"],
+        "context": ["统一社会信用代码", "营业执照", "企业代码"],
+        "score": 0.75,
+        "languages": ["zh"],
+    },
+
+    # 中国邮政编码
+    {
+        "expressions": [
+            r"[1-9]\d{5}(?!\d)"
+        ],
+        "name": "POSTAL_CODE_CN",
+        "examples": ["100000"],
+        "context": ["邮编", "邮政编码", "postal code"],
+        "score": 0.75,
+        "languages": ["zh", "en"],
+    },
+
+    # 护照号码
+    {
+        "expressions": [
+            r"[EGPS]\d{8}|[DES][A-Z]\d{7}"
+        ],
+        "name": "PASSPORT_CN",
+        "examples": ["E12345678", "DE1234567"],
+        "context": ["护照", "passport"],
+        "score": 0.75,
+        "languages": ["zh", "en"],
+    },
+
+    # 军官证号码
+    {
+        "expressions": [
+            r"[\u4e00-\u9fa5]{1,2}字第\d{4,8}号"
+        ],
+        "name": "MILITARY_ID_CN",
+        "examples": ["军字第2001234号", "军官字第2001234号"],
+        "context": ["军官证", "军人证件"],
+        "score": 0.75,
+        "languages": ["zh"],
+    },
+
+    # QQ号
+    {
+        "expressions": [
+            r"[1-9][0-9]{4,}"
+        ],
+        "name": "QQ_NUMBER",
+        "examples": ["12345678", "1234567890"],
+        "context": ["QQ", "腾讯", "qq号"],
+        "score": 0.75,
+        "languages": ["zh"],
+    },
+
+    # 微信号
+    {
+        "expressions": [
+            r"[a-zA-Z][-_a-zA-Z0-9]{5,19}"
+        ],
+        "name": "WECHAT_ID",
+        "examples": ["wxid_1234567890", "wx_12345"],
+        "context": ["微信", "WeChat", "微信号"],
+        "score": 0.75,
+        "languages": ["zh"],
+    },
+
+    # 车牌号
+    {
+        "expressions": [
+            r"[京津沪渝冀豫云辽黑湘皖鲁新苏浙赣鄂桂甘晋蒙陕吉闽贵粤青藏川宁琼使领][A-Z][A-HJ-NP-Z0-9]{4,5}[A-HJ-NP-Z0-9挂学警港澳]"
+        ],
+        "name": "LICENSE_PLATE_CN",
+        "examples": ["京A12345", "粤B12345D"],
+        "context": ["车牌", "车牌号", "车辆号码"],
+        "score": 0.75,
+        "languages": ["zh"],
+    },
 ]
 
 
