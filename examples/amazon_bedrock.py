@@ -7,8 +7,8 @@ from llm_guard.vault import Vault
 
 # Specify the AWS region, Bedrock agent ID, alias ID, and session ID
 REGION = "ap-northeast-1"
-AGENT_ID = "2XHVYVA9VT"
-AGENT_ALIAS_ID = "JDATWLDU6T"
+AGENT_ID = "xxx"
+AGENT_ALIAS_ID = "xxx"
 SESSION_ID = "afsd"
 
 
@@ -57,7 +57,7 @@ PROMPT_SUCCESS = (
     "He works in Test LLC."
 )
 
-PROMPT = '我的身份证号是513902198708300019'
+PROMPT = '我的身份证号是510102198808120029'
 
 
 sanitized_prompt, results_valid, results_score = scan_prompt(INPUT_SCANNERS, PROMPT)
